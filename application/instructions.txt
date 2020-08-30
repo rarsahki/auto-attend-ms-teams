@@ -1,0 +1,5 @@
+In order to use the application:
+1) You need to have a NITT registered ms-teams account.
+2) Place the chrome file on your "Desktop", otherwise the application will not 
+   work.
+3) You need to have Google Chrome installed on your PC.
