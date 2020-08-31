@@ -7,7 +7,9 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.alert import Alert 
+from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 from pyvirtualdisplay import Display  
 import time
 from datetime import datetime
@@ -16,13 +18,15 @@ import sys
 
 options = Options()
 options.add_argument("--start-maximized")
-options.add_argument('use-fake-device-for-media-stream')
 options.add_argument("--no-sandbox") 
 options.add_argument("--disable-setuid-sandbox") 
 options.add_argument("--disable-dev-shm-using") 
 options.add_argument("--disable-extensions") 
 options.add_argument("--disable-gpu")
 options.add_argument("disable-infobars")
+options.add_argument("--disable-notifications")
+options.add_argument('allow-file-access-from-files')
+options.add_argument('use-fake-ui-for-media-stream')
 
 driver = webdriver.Chrome(options=options)
 # tz_INDIA = pytz.timezone('Asia/Kolkata')
@@ -69,28 +73,28 @@ try:
                 driver.execute_script("alert(\"Invalid Subject\");")
                 sys.exit(0)
         try:
-            join_call = WebDriverWait(driver,1800).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"m1598504362487\"]/calling-join-button/button")))
+            join_call = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"m1598872710461\"]/calling-join-button/button")))
             join_call.click()
-        except WebDriverException or NoSuchElementException:
             try:
-                driver.execute_script("alert(\"Class hasn't started yet!\");")
-                sys.exit(0)
-            except WebDriverException:
-                pass
-        # time.sleep(5)
-            try:
-                no_video = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[2]/toggle-button[1]/div/button/span[1]")))
+                no_video = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[2]/toggle-button[1]/div/button")))
                 no_video.click()
-                no_audio = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"preJoinAudioButton\"]/div/button/span[1]")))
+                no_audio = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"preJoinAudioButton\"]/div/button")))
                 no_audio.click()
                 join_now = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[1]/div/div/button")))
                 join_now.click()
             except WebDriverException or NoSuchElementException:
                 try:
                     driver.execute_script("alert(\"Sorry, not able to join the call\");")
+                    print('Not performed')
                     sys.exit(0)
                 except WebDriverException:
                     pass
+        except WebDriverException or NoSuchElementException:
+            try:
+                driver.execute_script("alert(\"Class hasn't started yet!\");")
+                pass
+            except WebDriverException:
+                pass
     except WebDriverException or NoSuchElementException:
         try:
             driver.execute_script("alert(\"Specified card not present at the moment\");")
