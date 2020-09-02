@@ -73,7 +73,7 @@ try:
                 driver.execute_script("alert(\"Invalid Subject\");")
                 sys.exit(0)
         try:
-            join_call = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"m1598872710461\"]/calling-join-button/button")))
+            join_call = WebDriverWait(driver,1800).until(EC.element_to_be_clickable((By.XPATH,"//*[contains(text(), 'Join')]")))
             join_call.click()
             try:
                 no_video = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[2]/toggle-button[1]/div/button")))
@@ -82,6 +82,13 @@ try:
                 no_audio.click()
                 join_now = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[1]/div/div/button")))
                 join_now.click()
+                try:
+                    aria_label = WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.XPATH,"//*[@aria-label=\"Show participants\"]")))
+                    aria_label.click()
+                    while driver.find_element_by_xpath("//span[contains(text(),\"Organiser\")]"):
+                        time.sleep(900)
+                except NoSuchElementException:
+                    driver.find_element_by_xpath("//*[@aria-label=\"Hang up\"]").click()
             except WebDriverException or NoSuchElementException:
                 try:
                     driver.execute_script("alert(\"Sorry, not able to join the call\");")
