@@ -4,6 +4,7 @@ import selenium
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -46,75 +47,75 @@ def check_exists_by_id(id):
     except NoSuchElementException:
         return False
     return True
-login_email = driver.find_element_by_name("loginfmt")
-login_email.send_keys(Roll+"@nitt.edu")
-# time.sleep(2)
-login_email_submit = driver.find_element_by_id("idSIButton9")
-login_email_submit.click()
-login_pass = driver.find_element_by_name("passwd")
-login_pass.send_keys(Pass)
-# time.sleep(2)
 try:
+    login_email = WebDriverWait(driver,600).until(EC.presence_of_element_located((By.NAME,"loginfmt")))
+    login_email.send_keys(Roll+"@nitt.edu")
+    login_email_submit = WebDriverWait(driver,600).until(EC.element_to_be_clickable((By.ID,"idSIButton9")))
+    login_email_submit.click()
+    login_pass = WebDriverWait(driver,600).until(EC.presence_of_element_located((By.NAME,"passwd")))
+    login_pass.send_keys(Pass)
     login_pass_submit = WebDriverWait(driver,600).until(EC.element_to_be_clickable((By.XPATH,"//*[@value=\"Sign in\"]")))
     login_pass_submit.click()
     stay_button_no = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.ID,"idBtn_Back")))
     stay_button_no.click()
-    # time.sleep(10)
-    try:
-        card = WebDriverWait(driver,100).until(EC.presence_of_element_located((By.CLASS_NAME,"team-card")))
-        if len(driver.find_elements_by_class_name("team-name-text"))>0:
-            count = 0
-            for subject in driver.find_elements_by_class_name("team-name-text"):
-                if subject.text == Subject :
-                    subject.click()
-                    break
-                count = count + 1
-            if count == len(driver.find_elements_by_class_name("team-name-text")):
-                driver.execute_script("alert(\"Invalid Subject\");")
-                sys.exit(0)
-        try:
-            join_call = WebDriverWait(driver,1800).until(EC.element_to_be_clickable((By.XPATH,"//*[contains(text(), 'Join')]")))
-            join_call.click()
-            try:
-                no_video = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[2]/toggle-button[1]/div/button")))
-                no_video.click()
-                no_audio = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"preJoinAudioButton\"]/div/button")))
-                no_audio.click()
-                join_now = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[1]/div/div/button")))
-                join_now.click()
-                try:
-                    aria_label = WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.XPATH,"//*[@aria-label=\"Show participants\"]")))
-                    aria_label.click()
-                    while driver.find_element_by_xpath("//span[contains(text(),\"Organiser\")]"):
-                        time.sleep(900)
-                except NoSuchElementException:
-                    driver.find_element_by_xpath("//*[@aria-label=\"Hang up\"]").click()
-            except WebDriverException or NoSuchElementException:
-                try:
-                    driver.execute_script("alert(\"Sorry, not able to join the call\");")
-                    print('Not performed')
-                    sys.exit(0)
-                except WebDriverException:
-                    pass
-        except WebDriverException or NoSuchElementException:
-            try:
-                driver.execute_script("alert(\"Class hasn't started yet!\");")
-                pass
-            except WebDriverException:
-                pass
-    except WebDriverException or NoSuchElementException:
-        try:
-            driver.execute_script("alert(\"Specified card not present at the moment\");")
-        except WebDriverException:
-            pass
-        # time.sleep(2)
-        # driver.switch_to.alert.accept()
-        # driver.quit()
-        # time.sleep(5)
-except WebDriverException or NoSuchElementException:
+    use_app = WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH,"//*[contains(text(), 'Use the web app instead')]")))
+    use_app.click()
+except TimeoutException:
+    pass
+except WebDriverException:
     try:
         driver.execute_script("alert(\"Element didn't load in the stipulated time\");")
     except WebDriverException:
         pass
     time.sleep(2)
     driver.close()
+try:
+    card = WebDriverWait(driver,100).until(EC.presence_of_element_located((By.CLASS_NAME,"team-card")))
+    if len(driver.find_elements_by_class_name("team-name-text"))>0:
+        count = 0
+        for subject in driver.find_elements_by_class_name("team-name-text"):
+            if subject.text == Subject :
+                subject.click()
+                break
+            count = count + 1
+        if count == len(driver.find_elements_by_class_name("team-name-text")):
+            driver.execute_script("alert(\"Invalid Subject\");")
+            sys.exit(0)
+    try:
+        join_call = WebDriverWait(driver,1800).until(EC.element_to_be_clickable((By.XPATH,"//*[contains(text(), 'Join')]")))
+        join_call.click()
+        try:
+            no_video = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[2]/toggle-button[1]/div/button")))
+            no_video.click()
+            no_audio = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"preJoinAudioButton\"]/div/button")))
+            no_audio.click()
+            join_now = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[1]/div/div/button")))
+            join_now.click()
+            try:
+                aria_label = WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.XPATH,"//*[@aria-label=\"Show participants\"]")))
+                aria_label.click()
+                while driver.find_element_by_xpath("//span[contains(text(),\"Organiser\")]"):
+                    continue
+            except NoSuchElementException:
+                driver.find_element_by_xpath("//*[@aria-label=\"Hang up\"]").click()
+                driver.close()
+                sys.exit(0)
+        except WebDriverException or NoSuchElementException:
+            try:
+                driver.execute_script("alert(\"Sorry, not able to join the call\");")
+                print('Not performed')
+                sys.exit(0)
+            except WebDriverException:
+                pass
+    except WebDriverException or NoSuchElementException:
+        try:
+            driver.execute_script("alert(\"Class hasn't started yet!\");")
+            pass
+        except WebDriverException:
+            pass
+except WebDriverException or NoSuchElementException:
+    try:
+        driver.execute_script("alert(\"Specified card not present at the moment\");")
+    except WebDriverException:
+        driver.quit()
+        sys.exit()
