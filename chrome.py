@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from selenium import webdriver
 import selenium
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -85,26 +86,29 @@ try:
         join_call = WebDriverWait(driver,1800).until(EC.element_to_be_clickable((By.XPATH,"//*[contains(text(), 'Join')]")))
         join_call.click()
         try:
-            no_video = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[2]/toggle-button[1]/div/button")))
-            no_video.click()
-            no_audio = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"preJoinAudioButton\"]/div/button")))
-            no_audio.click()
+            no_video = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[2]/toggle-button")))
+            if no_video.get_attribute("title") == "Turn camera off":
+                no_video.click()
+            else:
+                pass
+            no_audio = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"preJoinAudioButton\"]")))
+            if no_audio.get_attribute("title") == "Mute microphone":
+                no_audio.click()
             join_now = WebDriverWait(driver,100).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[1]/div/div/button")))
             join_now.click()
             try:
                 aria_label = WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.XPATH,"//*[@aria-label=\"Show participants\"]")))
                 aria_label.click()
-                while driver.find_element_by_xpath("//span[contains(text(),\"Organiser\")]"):
-                    continue
+                # while driver.find_element_by_xpath("//*[contains(text(),\"Organiser\")]") is WebElement:
+                #     continue
             except NoSuchElementException:
                 driver.find_element_by_xpath("//*[@aria-label=\"Hang up\"]").click()
+                print('Organiser not present')
                 driver.close()
                 sys.exit(0)
         except WebDriverException or NoSuchElementException:
             try:
-                driver.execute_script("alert(\"Sorry, not able to join the call\");")
-                print('Not performed')
-                sys.exit(0)
+                pass
             except WebDriverException:
                 pass
     except WebDriverException or NoSuchElementException:
