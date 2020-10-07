@@ -66,10 +66,10 @@ def join_call_fn():
             try:
                 aria_label = WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.XPATH,"//*[@aria-label=\"Show participants\"]")))
                 aria_label.click()
-                more_btn = WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.XPATH,"//*[@id=\"page-content-wrapper\"]/div[1]/div/calling-screen/div/div[2]/meeting-panel-components/calling-roster/div/div[3]/div/div[1]/accordion/div/accordion-section[2]/div/calling-roster-section/div/div[2]/button")))
-                more_btn.click()
-                while driver.find_element_by_xpath("//*[contains(text(),'Organiser')]") is not None:
+                organiser = driver.find_element_by_xpath("//*[contains(text(),'Organiser')]")
+                while organiser is not None:
                     driver.implicitly_wait(300)
+                    organiser = driver.find_element_by_xpath("//*[contains(text(),'Organiser')]")
                     continue
             except NoSuchElementException:
                 driver.find_element_by_xpath("//*[@aria-label=\"Hang up\"]").click()
