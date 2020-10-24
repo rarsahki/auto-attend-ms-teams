@@ -41,6 +41,7 @@ driver = webdriver.Chrome(options=options)
 Subject = sys.argv[1]
 Roll = sys.argv[2]
 Pass = sys.argv[3]
+Prof = sys.argv[4]
 driver.get("https://teams.microsoft.com/_?culture=en-in&country=IN&lm=deeplink&lmsrc=homePageWeb&cmpid=WebSignIn#/school/conversations/General?threadId=19:e55d2df493ee4cb296c880eba5a0675b@thread.tacv2&ctx=channel")
 def check_exists_by_id(id):
     try:
@@ -66,10 +67,12 @@ def join_call_fn():
             try:
                 aria_label = WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.XPATH,"//*[@aria-label=\"Show participants\"]")))
                 aria_label.click()
-                organiser = driver.find_element_by_xpath("//*[contains(text(),'Organiser')]")
+                if WebDriverWait(driver,120).until(EC.element_to_be_clickable((By.CLASS_NAME,"roster-list-more-people"))) is not None:
+                    more_btn = driver.find_element_by_class_name("roster-list-more-people")
+                    more_btn.click()
+                organiser = driver.find_element_by_xpath("//*[contains(text(),'"+Prof+"')]")
                 while organiser is not None:
-                    driver.implicitly_wait(300)
-                    organiser = driver.find_element_by_xpath("//*[contains(text(),'Organiser')]")
+                    organiser = driver.find_element_by_xpath("//*[contains(text(),'"+Prof+"')]")
                     continue
             except NoSuchElementException:
                 driver.find_element_by_xpath("//*[@aria-label=\"Hang up\"]").click()
@@ -114,13 +117,13 @@ except WebDriverException:
 try:
     card = WebDriverWait(driver,100).until(EC.presence_of_element_located((By.CLASS_NAME,"team-card")))
     if len(driver.find_elements_by_class_name("team-name-text"))>0:
-        count = 0
+        COUNT = 0
         for subject in driver.find_elements_by_class_name("team-name-text"):
             if subject.text == Subject :
                 subject.click()
                 break
-            count = count + 1
-        if count == len(driver.find_elements_by_class_name("team-name-text")):
+            COUNT = COUNT + 1
+        if COUNT == len(driver.find_elements_by_class_name("team-name-text")):
             driver.execute_script("alert(\"Invalid Subject\");")
             sys.exit(0)
     join_call_fn()
